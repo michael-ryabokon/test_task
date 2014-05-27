@@ -1,0 +1,30 @@
+.container {
+	background-color: #123;
+	overflow: hidden;
+	margin: 10px auto;
+ 	width: 400px;
+}
+
+.images {
+  height: 400px;
+  background-color: silver;
+  overflow: hidden;
+  position: relative;
+
+  .image {
+    -webkit-transition-property: opacity;
+    -webkit-transition-duration: 2s;
+    -webkit-transition-timing-function: ease-in-out;
+    &.transparent {
+      opacity: 0;
+    }
+    width: 400px;
+    height: 400px;
+    font-size: 250px;
+    color: #fff;
+    text-align: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+}
