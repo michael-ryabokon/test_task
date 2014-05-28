@@ -15,6 +15,8 @@
     -webkit-transition-timing-function: ease-in-out;
     -webkit-transition-property: opacity;
     -webkit-transition-duration: 2s;
+
+    -webkit-user-select: none;
     &.transparent {
       opacity: 0;
     }
