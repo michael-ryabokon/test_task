@@ -2,7 +2,15 @@ var Slide = Class.create(Animation, {
 	
 	totalWidth: 0,
 
-	// events: ['mouseup', 'mousedown', 'mousemove'],
+	siblings: {
+		'-1': 'nextElementSibling',
+		 '1': 'previousElementSibling'
+	},
+
+	elements: {
+		'-1': 'first',
+		 '1': 'last'
+	},
 
 	initialize: function (options) {
 		// Parent methods
@@ -10,10 +18,8 @@ var Slide = Class.create(Animation, {
 
 		// Slide methods
 		this.calculateTotalWidth();
-		// this.setLeftCord();	
-		// this.setMargin();
 
-		this.currentImage = this.getFirstImage();
+		this.currentImage = this.getElement('first');
 		
 		this.bindEvents();
 
@@ -29,12 +35,6 @@ var Slide = Class.create(Animation, {
 		this.container.style.width = this.totalWidth + 'px';
 	},
 
-	/*setMargin: function () {
-		for (var i = 1; i < this.images.length; i++) {
-			this.images[i].style.marginLeft = -this.images[i].offsetWidth + 'px';
-		}
-	},
-*/
 	setLeftCord: function () {
 		for (var i = 1; i < this.images.length; i++) {
 			this.images[i].style.left = this.images[i].offsetWidth + 'px';
@@ -57,53 +57,86 @@ var Slide = Class.create(Animation, {
 
 	onMouseMove: function (event) {
 		if (this.startSwipe) {
-	
+			this.direction = ((event.clientX - this.startX) > 0) ? 1 : -1; // -1 -> swipe to left; 1 -> swipe to right
+
 			this.swipe = Math.abs(event.clientX - this.startX);
 
-			this.currentImage.style.marginLeft = -this.swipe + 'px';
+			if (!this.currentImage.previousElementSibling) {
+				this.currentImage.style.marginLeft = (this.swipe * this.direction) + 'px';	
+			} else {
+				this.currentImage = this.currentImage[this.siblings[this.direction]];
+				this.currentImage.style.webkitTransitionDuration = (500 / 1000) + 's';
+				this.currentImage.style.marginLeft = 0;
+
+				// (this.swipe * this.direction) + 'px';
+			}
+
+			
 			
 			console.log('move');
 		}
 	},
 
 	onMouseUp: function (event) {
-		// this.endX = event.clientX;
-		// this.toggleSwipeDuration(true);
-		
 		this.currentImage.style.webkitTransitionDuration = (500 / 1000) + 's';
 
 		if (this.swipe > 100) {
-			this.currentImage.style.marginLeft = '-400px';
-				
+			this.currentImage.style.marginLeft = 
+			(parseInt(this.currentImage.style.width) * this.direction) + 'px';
+
 				setTimeout(function () {
 					this.currentImage.style.webkitTransitionDuration = '0s';
-					this.currentImage = this.currentImage.nextElementSibling;
+					this.currentImage = this.currentImage[this.siblings[this.direction]];
+				}.bind(this), 500);
+
+				/*setTimeout(function () {
+					this.currentImage.style.webkitTransitionDuration = '0s';
+					this.currentImage = this.currentImage[this.siblings[this.direction]];
 					this.replaceElements();
-				}.bind(this), 500); //change to animation time
+				}.bind(this), 500); //change to animation time*/
 
 		} else {
 			this.currentImage.style.marginLeft = '0';
 		}
 
-		
 		this.swipe = 0;
 
 		console.log('up');
 		this.startSwipe = false;
 	},
-
-
-
+/*
 	getFirstImage: function () {
 		return document.getElementsByClassName('image').item(0);
+	},*/
+
+	getElement: function (place) {
+		/*var images = document.getElementsByClassName('image'),
+				index = (place === 'first') ? 0 : image.length - 1;
+
+		return images.item(index);*/
+
+		return this.container[place + 'Child'];
 	},
 
 	replaceElements: function () {
-			var first = this.getFirstImage().remove();
+			var elementPlace = this.elements[this.direction],
+					element = this.getElement(elementPlace);
+			
+			element.style.marginLeft = 0;
 
-			first.style.marginLeft = 0;
+			if (elementPlace === 'first') {
+				this.append(element);
+			} else {
+				this.prepend(element);
+			}
+	},
 
-			this.container.appendChild(first);
+	append: function (element) {
+			this.container.appendChild(element.remove());
+	},
+
+	prepend: function (element) {
+		this.container.insertBefore(element.remove(), this.getElement('first'));
 	}
 
 /*
