@@ -1,79 +1,54 @@
 var Slide = Class.create(Animation, {
-	defaultOptions: {
-		mode: 'auto',	// possible values: 'auto', 'manual', 'automanual'
-		swipeSpeed: 500, 	// arbitrary interger (miliseconds)
-		swipeDelay: 3000 // arbitrary interger (miliseconds). This is used in 'auto' and 'automanual' modes
-	},
-
-	currentTranslateX: 0,
+	
 	totalWidth: 0,
 
-
 	initialize: function (options) {
-		this.defaultOptions = _.extend(this.defaultOptions, options);
-		
-		this.container = document.getElementsByClassName('images')[0];
+		// Parent methods
+		this.animationPreparation(options);
 
-		this.setOptions();
+		// Slide methods
 		this.calculateTotalWidth();
-		this.setLeft();
-		// this.setZIndex();
-		// this.reCalculateLeftCord();
-		// this.setZIndex();
-		// this.reCalculateLeftCord();
+		this.setLeftCord();	
+		
 		this.translate();
 	},
 
-	setOptions: function () {
-		this.container.style.webkitTransitionDuration = 
-		(this.defaultOptions.swipeSpeed / 1000) + 's';		
-	},
-
 	calculateTotalWidth: function () {
-		for (var i = 0; i < this.defaultOptions.images.length; i++) {
-			this.totalWidth += this.defaultOptions.images[i].offsetWidth;
+		for (var i = 0; i < this.images.length; i++) {
+			this.totalWidth += this.images[i].offsetWidth;
 		}
 
 		this.container.style.width = this.totalWidth + 'px';
 	},
 
-	setLeft: function () {
-		for (var i = 1; i < this.defaultOptions.images.length; i++) {
-			this.defaultOptions.images[i].style.left = this.defaultOptions.images[i].offsetWidth + 'px';
+	setLeftCord: function () {
+		for (var i = 1; i < this.images.length; i++) {
+			this.images[i].style.left = this.images[i].offsetWidth + 'px';
 		}
 	},
 
 	translate: function () {
-		// var el;
-		this.currentTarget = this.container.firstElementChild;
+		var firstImage = document.getElementsByClassName('image').item(0),
+				currentImage = firstImage;
 
-		setInterval(function () {	
-			// if (!this.currentTarget.nextElementSibling) ;	
+		setInterval(function () {
+			currentImage = currentImage.nextElementSibling;
 
-		 	
-
-			this.currentTarget = this.currentTarget.nextElementSibling;
+			currentImage.style.left = '';	
 			
+			_.delay(function () {
+				this.replaceElements()
+			}.bind(this), this.animationOptions.swipeDelay);
 
-			this.currentTarget.style.left = '';	
-			// setTimeout(function () {
-			// 	this.currentTarget.style.left = '';	
-			// }.bind(this), 10);
-
-			_.defer(function () {
-this.replaceElements()
-			}.bind(this));
-
-
-
-		}.bind(this), this.defaultOptions.swipeDelay);
+		}.bind(this), this.animationOptions.swipeDelay);
 	},
 
+
 	replaceElements: function () {
-		var el = this.container.firstElementChild.remove();
+		var firstImage = document.getElementsByClassName('image').item(0).remove();
 
-		el.style.left = this.container.firstElementChild.offsetWidth + 'px';
+		firstImage.style.left = firstImage.style.width;
 
-		this.container.appendChild(el);
+		this.container.appendChild(firstImage);
 	}
 });

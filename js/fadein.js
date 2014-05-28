@@ -3,29 +3,27 @@ var FadeIn = Class.create(Animation, {
 	defaults: {
 		images: [],
 		swipeSpeed: 500, 
-		swipeDelay: 3000
+		swipeDelay: 3000,
+		transitionProperty: 'opacity',
+		transitionTmingFunction: 'ease-in-out'
 	},
 
 	initialize: function (options) {
 		// Parent methods
-		this.setAnimationOptions(options);
-		this.renderImages();
-		this.getImagesFromDOM();
+		this.animationPreparation(options);
 
 		// Fade in methods
-		this.setElementsAttributes();
+		this.setZIndex();
 		this.startAnimation();
 
 		return this;
 	},
 
-	setElementsAttributes: function () {
+	setZIndex: function () {
 		this.images.reverse();
 
 		for (var i = 0; i < this.images.length; i++) {
 			this.images[i].style.zIndex = i;
-			this.images[i].style.webkitTransitionDuration = 
-				this.animationOptions.swipeSpeed / 1000 + 's';
 		}
 
 		this.images.reverse();
