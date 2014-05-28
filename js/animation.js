@@ -15,7 +15,7 @@ var Animation = Class.create({
 		swipeSpeed: 500, 	// arbitrary interger (miliseconds)
 		swipeDelay: 3000, // arbitrary interger (miliseconds). This is used in 'auto' and 'automanual' modes
 		transitionProperty: 'all',
-		transitionTmingFunction: 'ease-in-out' // 'ease-in', 'ease-out' and so on
+		transitionTmingFunction: 'linear' // 'ease-in', 'ease-out' and so on
 	},
 
 	animationPreparation: function (options) {
@@ -40,7 +40,7 @@ var Animation = Class.create({
 	setTrasitionsProperties: function () {
 		for (var i = 0; i < this.images.length; i++) {
 			this.images[i].style.webkitTransitionProperty = this.animationOptions.transitionProperty;
-			this.images[i].style.webkitTransitionDuration = this.animationOptions.swipeSpeed / 1000 + 's';
+			// this.images[i].style.webkitTransitionDuration = this.animationOptions.swipeSpeed / 1000 + 's';
 			this.images[i].style.webkitTransitionTimingFunction = this.animationOptions.transitionTmingFunction;
 		}
 	},

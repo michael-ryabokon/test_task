@@ -10,12 +10,12 @@ var Slide = Class.create(Animation, {
 
 		// Slide methods
 		this.calculateTotalWidth();
-		this.setLeftCord();	
+		// this.setLeftCord();	
+		// this.setMargin();
 
 		this.currentImage = this.getFirstImage();
 		
 		this.bindEvents();
-
 
 
 		// this.translate();
@@ -29,6 +29,12 @@ var Slide = Class.create(Animation, {
 		this.container.style.width = this.totalWidth + 'px';
 	},
 
+	/*setMargin: function () {
+		for (var i = 1; i < this.images.length; i++) {
+			this.images[i].style.marginLeft = -this.images[i].offsetWidth + 'px';
+		}
+	},
+*/
 	setLeftCord: function () {
 		for (var i = 1; i < this.images.length; i++) {
 			this.images[i].style.left = this.images[i].offsetWidth + 'px';
@@ -46,38 +52,61 @@ var Slide = Class.create(Animation, {
 	onMouseDown: function (event) {
 		this.startX = event.clientX;
 		this.startSwipe = true;
+
 	},
 
 	onMouseMove: function (event) {
 		if (this.startSwipe) {
-			// this.currentImage.style.left = 400 - event.clientX + 'px';
+	
+			this.swipe = Math.abs(event.clientX - this.startX);
+
+			this.currentImage.style.marginLeft = -this.swipe + 'px';
+			
 			console.log('move');
 		}
 	},
 
 	onMouseUp: function (event) {
-		this.endX = event.clientX;
+		// this.endX = event.clientX;
+		// this.toggleSwipeDuration(true);
+		
+		this.currentImage.style.webkitTransitionDuration = (500 / 1000) + 's';
 
-		// console.log(this.endX);
-		// if (this.startX)
+		if (this.swipe > 100) {
+			this.currentImage.style.marginLeft = '-400px';
+				
+				setTimeout(function () {
+					this.currentImage.style.webkitTransitionDuration = '0s';
+					this.currentImage = this.currentImage.nextElementSibling;
+					this.replaceElements();
+				}.bind(this), 500); //change to animation time
 
-		if (Math.abs(this.startX - this.endX) > 50) {
-			this.currentImage = this.currentImage.nextElementSibling || this.getFirstImage();
-			this.currentImage.style.left = '';
-
-			setTimeout(function () {
-				this.replaceElements();
-			}.bind(this), this.animationOptions.swipeSpeed);	
+		} else {
+			this.currentImage.style.marginLeft = '0';
 		}
+
+		
+		this.swipe = 0;
 
 		console.log('up');
 		this.startSwipe = false;
 	},
 
+
+
 	getFirstImage: function () {
 		return document.getElementsByClassName('image').item(0);
 	},
 
+	replaceElements: function () {
+			var first = this.getFirstImage().remove();
+
+			first.style.marginLeft = 0;
+
+			this.container.appendChild(first);
+	}
+
+/*
 	translate: function () {
 		var firstImage = document.getElementsByClassName('image').item(0),
 				currentImage = firstImage;
@@ -92,13 +121,13 @@ var Slide = Class.create(Animation, {
 			}.bind(this), this.animationOptions.swipeDelay);
 
 		}.bind(this), this.animationOptions.swipeDelay);
-	},
+	},*/
 
-	replaceElements: function () {
+/*	replaceElements: function () {
 		var firstImage = this.getFirstImage().remove();
 
 		firstImage.style.left = firstImage.style.width;
 
 		this.container.appendChild(firstImage);
-	}
+	}*/
 });
