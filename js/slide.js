@@ -24,6 +24,11 @@ var Slide = Class.create(Animation, {
 		'false': 'prepareNextImageBeforeSwipe'
 	},
 
+	animationModes: {
+		'auto': 'startAnimation',
+		'manual': 'bindEvents'
+	},
+
 	initialize: function (options) {
 		// Parent methods
 		this.animationPreparation(options);
@@ -31,7 +36,8 @@ var Slide = Class.create(Animation, {
 		// Slide methods
 		this.calculateTotalWidth();
 		this.currentImage = this.getElement('first');
-		this.bindEvents();
+
+		this[this.animationModes[this.animationOptions.mode]]();
 	},
 
 	calculateTotalWidth: function () {
@@ -40,6 +46,20 @@ var Slide = Class.create(Animation, {
 		}
 
 		this.container.style.width = this.totalWidth + 'px';
+	},
+
+	startAnimation: function () {
+		this.setAnimationDuraiton(this.currentImage);
+
+		setInterval(this.changeElementsInCycle.bind(this), this.animationOptions.swipeDelay);
+	},
+
+	changeElementsInCycle: function () {
+		this.setMarginLeft.call(this.currentImage, -this.currentImage.offsetWidth);
+
+		this.currentImage = this.getNextElement(this.currentImage);
+		
+		this.setAnimationDuraiton(this.currentImage);
 	},
 
 	bindEvents: function () {
@@ -84,28 +104,11 @@ var Slide = Class.create(Animation, {
 		}
 	},
 
-	preparePreviousImageBeforeSwipe: function () {
-		this.previousImage = 
-				this.currentImage.previousElementSibling || 
-				this.prepend(this.getElement('last')) ||
-				this.currentImage.previousElementSibling;
-
-			this.previousImage.style.marginLeft = 
-				- this.previousImage.offsetWidth + (this.swipe * this.direction) + 'px';
-	},
-
-	prepareNextImageBeforeSwipe: function () {
-		this.nextImage = 
-				this.currentImage.nextElementSibling ||
-				this.append(this.getElement('first')) || 
-				this.currentImage.nextElementSibling;
-
-			this.currentImage.style.marginLeft = (this.swipe * this.direction) + 'px';
-	},
-
 	backToNormalState: function () {
 		if (this.previousImage) {
-			this.previousImage.style.marginLeft = (- this.previousImage.offsetWidth) + 'px'; 
+
+			this.setMarginLeft.call(this.previousImage, - this.previousImage.offsetWidth)
+
 			setTimeout(function () {
 				this.clearAnimationDuration(this.previousImage);
 			}.bind(this), this.animationOptions.swipeSpeed);
@@ -115,19 +118,32 @@ var Slide = Class.create(Animation, {
 				this.clearAnimationDuration(this.currentImage);
 			}.bind(this), this.animationOptions.swipeSpeed);
 
-		this.currentImage.style.marginLeft = '0';
+		this.setMarginLeft.call(this.currentImage, 0);
 	},
 
 	swipeToLeft: function () {
 		this.previousImage.style.webkitTransitionDuration = this.getAnimationDuration();
-		this.previousImage.style.marginLeft = 0;
-
+		this.setMarginLeft.call(this.previousImage, 0);
+		
 		setTimeout(this.preparePreviousImageAfterSwipe.bind(this), this.animationOptions.swipeSpeed);
 	},
 
 	swipeToRight: function () {
-		this.currentImage.style.marginLeft = (this.currentImage.offsetWidth * this.direction) + 'px';
+		this.setMarginLeft.call(this.currentImage, (this.currentImage.offsetWidth * this.direction));
+
 		setTimeout(this.prepareNextImageAfterSwipe.bind(this), this.animationOptions.swipeSpeed); //change to animation time
+	},
+
+	preparePreviousImageBeforeSwipe: function () {
+		this.previousImage = this.getPreviousElement(this.currentImage);
+
+		this.setMarginLeft.call(this.previousImage, (- this.previousImage.offsetWidth) + (this.swipe * this.direction));
+	},
+
+	prepareNextImageBeforeSwipe: function () {
+		this.nextImage = this.getNextElement(this.currentImage);
+
+		this.setMarginLeft.call(this.currentImage, (this.swipe * this.direction));
 	},
 
 	preparePreviousImageAfterSwipe: function () {
@@ -140,12 +156,32 @@ var Slide = Class.create(Animation, {
 		this.currentImage = this.currentImage[this.siblings[this.direction]];
 	},
 
+	setAnimationDuraiton: function (element) {
+		element.style.webkitTransitionDuration = this.getAnimationDuration();
+	},
+
+	setMarginLeft: function (value) {
+		this.style.marginLeft = value + 'px';
+	},
+
 	getAnimationDuration: function () {
-		return (this.animationOptions.swipeSpeed / 1000) + 's'; //change to animation options;
+		return (this.animationOptions.swipeSpeed / 1000) + 's';
 	},
 
 	getElement: function (place) {
 		return this.container[place + 'Child'];
+	},
+
+	getNextElement: function (currentElement) {
+		return currentElement.nextElementSibling || 
+			this.append(this.getElement('first')) || 
+			currentElement.nextElementSibling;
+	},
+
+	getPreviousElement: function (currentElement) {
+		return currentElement.previousElementSibling || 
+			this.prepend(this.getElement('last')) ||
+			currentElement.previousElementSibling;
 	},
 
 	clearAnimationDuration: function (element) {
@@ -155,7 +191,7 @@ var Slide = Class.create(Animation, {
 	append: function (element) {
 			var el = element.remove();
 
-			el.style.marginLeft = '0px';
+			this.setMarginLeft.call(el, 0);
 
 			this.container.appendChild(el);
 	},

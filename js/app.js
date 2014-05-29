@@ -6,7 +6,9 @@ window.addEventListener('load', function () {
 */
 	var slide = new Slide({
 		container: document.querySelector('.images'),
-		swipeSpeed: 500
+		swipeSpeed: 500,
+		swipeDelay: 3000
+		// ,mode: 'manual'
 	});
 
 }, false);
