@@ -5,8 +5,8 @@ window.addEventListener('load', function () {
 	});
 */
 	var slide = new Slide({
-		container: document.querySelector('.images')
-		// ,swipeSpeed: 0
+		container: document.querySelector('.images'),
+		swipeSpeed: 500
 	});
 
 }, false);

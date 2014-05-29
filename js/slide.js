@@ -2,6 +2,8 @@ var Slide = Class.create(Animation, {
 	
 	totalWidth: 0,
 
+	minimumSwipe: 50,
+
 	siblings: {
 		'-1': 'nextElementSibling',
 		 '1': 'previousElementSibling'
@@ -12,19 +14,24 @@ var Slide = Class.create(Animation, {
 		 '1': 'last'
 	},
 
+	swipeDirection: {
+		'true': 'swipeToLeft',
+		'false': 'swipeToRight'
+	},
+
+	prepareImageBeforeSwipe: {
+		'true': 'preparePreviousImageBeforeSwipe',
+		'false': 'prepareNextImageBeforeSwipe'
+	},
+
 	initialize: function (options) {
 		// Parent methods
 		this.animationPreparation(options);
 
 		// Slide methods
 		this.calculateTotalWidth();
-
 		this.currentImage = this.getElement('first');
-		
 		this.bindEvents();
-
-
-		// this.translate();
 	},
 
 	calculateTotalWidth: function () {
@@ -33,12 +40,6 @@ var Slide = Class.create(Animation, {
 		}
 
 		this.container.style.width = this.totalWidth + 'px';
-	},
-
-	setLeftCord: function () {
-		for (var i = 1; i < this.images.length; i++) {
-			this.images[i].style.left = this.images[i].offsetWidth + 'px';
-		}
 	},
 
 	bindEvents: function () {
@@ -52,106 +53,103 @@ var Slide = Class.create(Animation, {
 	onMouseDown: function (event) {
 		this.startX = event.clientX;
 		this.swipeStart = true;
-
 	},
 
 	onMouseMove: function (event) {
 		if (!this.swipeStart) return;
 
-		this.direction = ((event.clientX - this.startX) > 0) ? 1 : -1; // -1 -> swipe to left; 1 -> swipe to right
+		// -1 -> swipe to left; 1 -> swipe to right
+		this.direction = ((event.clientX - this.startX) > 0) ? 1 : -1; 
 
 		this.swipe = Math.abs(event.clientX - this.startX);
 
-		if (this.direction > 0) {
-			this.previousImage = 
+		this[this.prepareImageBeforeSwipe[this.direction > 0]]();
+	},
+
+	onMouseUp: function (event) {
+		this.swipeStart = false;
+
+		this.currentImage.style.webkitTransitionDuration = this.getAnimationDuration();
+		
+		if (this.previousImage) {
+			this.previousImage.style.webkitTransitionDuration = this.getAnimationDuration(); 
+		}
+
+		if (this.swipe > this.minimumSwipe) {
+			//start swipe
+			this[this.swipeDirection[(this.direction > 0)]]();
+		} else {
+			//back to normal state
+			this.backToNormalState();
+		}
+	},
+
+	preparePreviousImageBeforeSwipe: function () {
+		this.previousImage = 
 				this.currentImage.previousElementSibling || 
 				this.prepend(this.getElement('last')) ||
 				this.currentImage.previousElementSibling;
 
 			this.previousImage.style.marginLeft = 
 				- this.previousImage.offsetWidth + (this.swipe * this.direction) + 'px';
-		} else {
-			this.nextImage = 
+	},
+
+	prepareNextImageBeforeSwipe: function () {
+		this.nextImage = 
 				this.currentImage.nextElementSibling ||
 				this.append(this.getElement('first')) || 
 				this.currentImage.nextElementSibling;
 
 			this.currentImage.style.marginLeft = (this.swipe * this.direction) + 'px';
-
-		}
-			
-		console.log('move');
-
 	},
 
-	onMouseUp: function (event) {
-		this.currentImage.style.webkitTransitionDuration = this.getDuration();
+	backToNormalState: function () {
 		if (this.previousImage) {
-			this.previousImage.style.webkitTransitionDuration = this.getDuration(); 
-		}
-
-		if (this.swipe > 50) {
-////////// to left
-			if (this.direction > 0) {
-				this.previousImage.style.webkitTransitionDuration = this.getDuration();
-				this.previousImage.style.marginLeft = 0;
-
-				setTimeout(function () {
-					this.currentImage = this.currentImage[this.siblings[this.direction]];
-					this.currentImage.nextElementSibling.style.webkitTransitionDuration = '0s';
-				}.bind(this), 500);
-			} else {
-////////// to right
-				this.currentImage.style.marginLeft = 
-					(this.currentImage.offsetWidth * this.direction) + 'px';			
-
-				setTimeout(function () {
-					this.currentImage.style.webkitTransitionDuration = '0s';
-					this.currentImage = this.currentImage[this.siblings[this.direction]];
-				}.bind(this), 500); //change to animation time
-			}
-
-		} else {
-			if (this.previousImage) { 
-				this.previousImage.style.marginLeft =  
-					(- this.previousImage.offsetWidth) + 'px'; 
-				setTimeout(function () {
-					this.previousImage.style.webkitTransitionDuration = '0s';
-				}.bind(this), 500);
-			}
-
+			this.previousImage.style.marginLeft = (- this.previousImage.offsetWidth) + 'px'; 
 			setTimeout(function () {
-					this.currentImage.style.webkitTransitionDuration = '0s';
-				}.bind(this), 500);
-
-			this.currentImage.style.marginLeft = '0';
+				this.clearAnimationDuration(this.previousImage);
+			}.bind(this), this.animationOptions.swipeSpeed);
 		}
 
-		this.swipe = 0;
+		setTimeout(function () {
+				this.clearAnimationDuration(this.currentImage);
+			}.bind(this), this.animationOptions.swipeSpeed);
 
-		console.log('up');
-		this.swipeStart = false;
+		this.currentImage.style.marginLeft = '0';
 	},
 
-	getDuration: function () {
-		return (500 / 1000) + 's'; //change to animation options;
+	swipeToLeft: function () {
+		this.previousImage.style.webkitTransitionDuration = this.getAnimationDuration();
+		this.previousImage.style.marginLeft = 0;
+
+		setTimeout(this.preparePreviousImageAfterSwipe.bind(this), this.animationOptions.swipeSpeed);
+	},
+
+	swipeToRight: function () {
+		this.currentImage.style.marginLeft = (this.currentImage.offsetWidth * this.direction) + 'px';
+		setTimeout(this.prepareNextImageAfterSwipe.bind(this), this.animationOptions.swipeSpeed); //change to animation time
+	},
+
+	preparePreviousImageAfterSwipe: function () {
+		this.currentImage = this.currentImage[this.siblings[this.direction]];
+		this.clearAnimationDuration(this.currentImage.nextElementSibling);
+	},
+
+	prepareNextImageAfterSwipe: function () {
+		this.clearAnimationDuration(this.currentImage);
+		this.currentImage = this.currentImage[this.siblings[this.direction]];
+	},
+
+	getAnimationDuration: function () {
+		return (this.animationOptions.swipeSpeed / 1000) + 's'; //change to animation options;
 	},
 
 	getElement: function (place) {
 		return this.container[place + 'Child'];
 	},
 
-	replaceElements: function () {
-			var elementPlace = this.elements[this.direction],
-					element = this.getElement(elementPlace);
-			
-			element.style.marginLeft = 0;
-
-			if (elementPlace === 'first') {
-				this.append(element);
-			} else {
-				this.prepend(element);
-			}
+	clearAnimationDuration: function (element) {
+		element.style.webkitTransitionDuration = '0s';
 	},
 
 	append: function (element) {
@@ -167,29 +165,4 @@ var Slide = Class.create(Animation, {
 
 		return false;
 	}
-
-/*
-	translate: function () {
-		var firstImage = document.getElementsByClassName('image').item(0),
-				currentImage = firstImage;
-
-		setInterval(function () {
-			currentImage = currentImage.nextElementSibling;
-
-			currentImage.style.left = '';	
-			
-			setTimeout(function () {
-				this.replaceElements();
-			}.bind(this), this.animationOptions.swipeDelay);
-
-		}.bind(this), this.animationOptions.swipeDelay);
-	},*/
-
-/*	replaceElements: function () {
-		var firstImage = this.getFirstImage().remove();
-
-		firstImage.style.left = firstImage.style.width;
-
-		this.container.appendChild(firstImage);
-	}*/
 });
