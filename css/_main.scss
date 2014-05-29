@@ -1,35 +1,54 @@
 .container {
-	background-color: #123;
 	overflow: hidden;
 	margin: 10px auto;
  	width: 400px;
+  padding: 0;
+}
+
+.dialog {
+  position: relative;
+  top: auto;
+  right: auto;
+  left: auto;
+  bottom: auto;
+  z-index: 1111;
+  display: block;
+  & > .modal {
+    top: 100px;
+    display: block;
+  }
 }
 
 .images {
+  margin-top: 72px;
   height: 400px;
   background-color: silver;
   overflow: hidden;
   position: relative;
 
   .image {
-    -webkit-transition-timing-function: ease-in-out;
-    -webkit-transition-property: opacity;
-    // -webkit-transition-duration: 2s;
-
-    -webkit-user-select: none;
-    &.transparent {
-      opacity: 0;
-    }
     width: 400px;
     height: 400px;
+    
     font-size: 250px;
     color: #fff;
     text-align: center;
 
-    float: left;
+    -webkit-user-select: none;
+    &.slide {
+      float: left;
+    }
+    
+    &.fadeIn {
+      -webkit-transition-timing-function: ease-in-out;
+      -webkit-transition-property: opacity;
 
-    /* position: absolute;
-    top: 0;
-    left: 0; */
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    &.transparent {
+      opacity: 0;
+    }
   }
 }

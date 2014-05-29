@@ -1,19 +1,83 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Test task</title>
+		<title>MADS Test</title>
 		<meta charset="utf-8" />
+		<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
 		<link rel="stylesheet" type="text/css" href="css/main.css" />
+		<script src="js/lib/underscore-min.js"></script>
 		<script src="js/lib/prototype.js"></script>
-		<script src="js/lib/underscore.js"></script>
 		<script src="js/animation.js"></script>
 		<script src="js/slide.js"></script>
 		<script src="js/fadein.js"></script>
 		<script src="js/app.js"></script>
 	</head>
 	<body>
-	<div class="container">
-	  <div class="images"></div>
-	</div>
+		<header>
+			<h1 class="text-center">MADS test task</h1>
+		</header>
+		<!-- Setup dialog -->
+		<div class="dialog">
+			<div class="modal">
+			  <div class="modal-dialog">
+			    <div class="modal-content">
+		    		<div class="modal-header">
+		      		<h4 class="modal-title">Choose your animation</h4>
+		    		</div>
+		    		<div class="modal-body">
+		      		<form class='form-horizontal'>
+	      			  <div class="form-group">
+  								<label for="type" class="col-sm-4 control-label">Animation type</label>
+    							<div class="col-md-8">
+    								<div class="radio">
+    									<label><input type="radio" name="type" checked="checked" value="slide"/>Slide</label>
+    								</div>
+    								<div class="radio">
+    									<label><input type="radio" name="type" value="fadeIn"/>Fade in</label>
+    								</div>
+    							</div>
+  							</div>
+  							<div class="form-group">
+  								<label for="delay" class="col-sm-4 control-label">Animation delay</label>
+    							<div class="col-md-8">
+    								<input type="number" id="delay" class="form-control" placeholder="Default delay 3s"/>
+    							</div>
+  							</div>
+  							<div class="form-group">
+  								<label for="duration" class="col-sm-4 control-label">Animation duration</label>
+    							<div class="col-md-8">
+    								<input type="number" id="duration" class="form-control" placeholder="Default duration 0.5s"/>
+    							</div>
+  							</div>
+  							<div class="form-group">
+  								<label for="mode" class="col-sm-4 control-label">Animation mode</label>
+    							<div class="col-md-8">
+    								<div class="radio">
+    									<label><input type="radio" name="mode" checked="checked" value="auto"/>Auto</label>
+    								</div>
+    								<div class="radio">
+    									<label><input type="radio" name="mode" value="manual"/>Manual</label>
+    								</div>
+    							</div>
+  							</div>
+  							<div class="form-group">
+  								<label for="images" class="col-sm-4 control-label">Images</label>
+    							<div class="col-md-8">
+    								<textarea id="images" class="form-control" rows="6" placeholder="You can add path to images separated by commas(http://image.png, http://another Image.png, etc.) or leave it empty for default images"></textarea>
+    							</div>
+  							</div>
+		      		</form>
+		    		</div>
+		    		<div class="modal-footer">
+		      		<button type="button" id="create" class="btn btn-primary">Create</button>
+		    		</div>
+		  		</div>
+				</div>
+			</div>
+		</div>
+		<!-- Images -->
+		<div class="container">
+			<div class="images hide"></div>
+		</div>
 	</body>
 </html>

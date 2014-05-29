@@ -1,26 +1,41 @@
 .container {
-  background-color: #123;
   overflow: hidden;
   margin: 10px auto;
-  width: 400px; }
+  width: 400px;
+  padding: 0; }
+
+.dialog {
+  position: relative;
+  top: auto;
+  right: auto;
+  left: auto;
+  bottom: auto;
+  z-index: 1111;
+  display: block; }
+  .dialog > .modal {
+    top: 100px;
+    display: block; }
 
 .images {
+  margin-top: 72px;
   height: 400px;
   background-color: silver;
   overflow: hidden;
   position: relative; }
   .images .image {
-    -webkit-transition-timing-function: ease-in-out;
-    -webkit-transition-property: opacity;
-    -webkit-user-select: none;
     width: 400px;
     height: 400px;
     font-size: 250px;
     color: #fff;
     text-align: center;
-    float: left;
-    /* position: absolute;
-    top: 0;
-    left: 0; */ }
+    -webkit-user-select: none; }
+    .images .image.slide {
+      float: left; }
+    .images .image.fadeIn {
+      -webkit-transition-timing-function: ease-in-out;
+      -webkit-transition-property: opacity;
+      position: absolute;
+      top: 0;
+      left: 0; }
     .images .image.transparent {
       opacity: 0; }

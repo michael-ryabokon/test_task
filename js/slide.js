@@ -1,12 +1,30 @@
 var Slide = Class.create(Animation, {
 	
+	className: 'slide',
+
+	doesNeedToWait: false,
+	autoModeTimer: 0,
+	minimumSwipe: 50,
 	totalWidth: 0,
 
-	minimumSwipe: 50,
+	prepareImageBeforeSwipe: {
+		'true': 'preparePreviousImageBeforeSwipe',
+		'false': 'prepareNextImageBeforeSwipe'
+	},
+	
+	animationModes: {
+		'auto': 'startAnimation',
+		'manual': 'bindEvents'
+	},
 
 	siblings: {
-		'-1': 'nextElementSibling',
-		 '1': 'previousElementSibling'
+		 '1': 'previousElementSibling',
+		'-1': 'nextElementSibling'
+	},
+
+	swipeDirection: {
+		'false': 'swipeToRight',
+		'true': 'swipeToLeft'
 	},
 
 	elements: {
@@ -14,20 +32,6 @@ var Slide = Class.create(Animation, {
 		 '1': 'last'
 	},
 
-	swipeDirection: {
-		'true': 'swipeToLeft',
-		'false': 'swipeToRight'
-	},
-
-	prepareImageBeforeSwipe: {
-		'true': 'preparePreviousImageBeforeSwipe',
-		'false': 'prepareNextImageBeforeSwipe'
-	},
-
-	animationModes: {
-		'auto': 'startAnimation',
-		'manual': 'bindEvents'
-	},
 
 	initialize: function (options) {
 		// Parent methods
@@ -37,7 +41,7 @@ var Slide = Class.create(Animation, {
 		this.calculateTotalWidth();
 		this.currentImage = this.getElement('first');
 
-		this[this.animationModes[this.animationOptions.mode]]();
+		this[this.animationModes[this.animationOptions.mode]]();	
 	},
 
 	calculateTotalWidth: function () {
@@ -51,7 +55,10 @@ var Slide = Class.create(Animation, {
 	startAnimation: function () {
 		this.setAnimationDuraiton(this.currentImage);
 
-		setInterval(this.changeElementsInCycle.bind(this), this.animationOptions.swipeDelay);
+		this.autoModeTimer = setInterval(
+			this.changeElementsInCycle.bind(this), 
+			this.animationOptions.swipeDelay
+		);
 	},
 
 	changeElementsInCycle: function () {

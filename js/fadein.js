@@ -1,5 +1,7 @@
 var FadeIn = Class.create(Animation, {
 
+	className: 'fadeIn',
+
 	defaults: {
 		images: [],
 		swipeSpeed: 500, 
@@ -13,26 +15,28 @@ var FadeIn = Class.create(Animation, {
 		this.animationPreparation(options);
 
 		// Fade in methods
-		this.setZIndex();
+		this.setAttributes();
 		this.startAnimation();
 
 		return this;
 	},
 
-	setZIndex: function () {
+	setAttributes: function () {
 		this.images.reverse();
 
 		for (var i = 0; i < this.images.length; i++) {
 			this.images[i].style.zIndex = i;
+			this.images[i].style.webkitTransitionDuration = 
+				this.animationOptions.swipeSpeed / 1000 + 's';
 		}
 
 		this.images.reverse();
 	},
 
 	startAnimation: function () {
-		var firstImage = this.images.first(),
+		var firstImage = this.container.firstChild,
 				currentImage = firstImage;
-
+		
 		setInterval(function () {
 			var nextElementSibling = currentImage.nextElementSibling;
 

@@ -1,6 +1,7 @@
 var Animation = Class.create({
 
 	colors: ['red', 'green', 'blue'],
+	className: '',
 
 	images: [],
 
@@ -11,7 +12,7 @@ var Animation = Class.create({
 
 	defaults: {
 		images: [],
-		mode: 'auto', 		// possible values: 'auto', 'manual', 'automanual'
+		mode: 'auto', 		// possible values: 'auto', 'manual' ('automanual' in nearest future)
 		swipeSpeed: 500, 	// arbitrary interger (miliseconds)
 		swipeDelay: 3000, // arbitrary interger (miliseconds). This is used in 'auto' and 'automanual' modes
 		transitionProperty: 'all',
@@ -30,17 +31,20 @@ var Animation = Class.create({
 	},
 
 	renderImages: function () {
-		if (this.animationOptions.images.length) {
+		/*var imagesCount = this.animationOptions.images.length;
+
+		if (imagesCount && imagesCount >= 2) {
 			this.appendImages();
 		} else {
 			this.createDefaultImages();
-		}
+		}*/
+
+		this.createDefaultImages();
 	},
 
 	setTrasitionsProperties: function () {
 		for (var i = 0; i < this.images.length; i++) {
 			this.images[i].style.webkitTransitionProperty = this.animationOptions.transitionProperty;
-			// this.images[i].style.webkitTransitionDuration = this.animationOptions.swipeSpeed / 1000 + 's';
 			this.images[i].style.webkitTransitionTimingFunction = this.animationOptions.transitionTmingFunction;
 		}
 	},
@@ -53,14 +57,15 @@ var Animation = Class.create({
 
 		for (var i = 0; i < this.animationOptions.images.length; i++) {
 			image = document.createElement('img');
-			image.src = this.animationOptions.images[i];
+			image.src = this.animationOptions.images[i].trim();
 			image.style.width = this.width;
 			image.style.height = this.height;
+			images.addClassName(this.className);
 
 			wrapper = document.createElement('div').addClassName('image');
 			wrapper.appendChild(image);
 
-			this.container.appendChild(wrapper);
+			this.container.appendChild(images);
 		}
 	},
 
@@ -74,6 +79,7 @@ var Animation = Class.create({
 				el.style.backgroundColor = this.colors[i];
 				el.style.width = this.width;
 				el.style.height = this.height;
+				el.addClassName(this.className);
 				el.innerHTML = i + 1;
 
 				this.container.appendChild(el);
@@ -82,6 +88,7 @@ var Animation = Class.create({
 
 	createContainer: function () {
 		var container = document.createElement('div').addClassName('images');
+
 
 		document.querySelector('body').appendChild(container);
 
