@@ -2,7 +2,6 @@ MADS task
 =========
 <h3>According to task I've used:</h3>
 <ul>
-  <li>I've made two types of animation</li>
   <li>Prototype.js for inheritance and Underscore.js (few really  nice methods)</li>
   <li>CSS transition properties for animation</li>
   <li>Native JavaScript</li>
