@@ -31,14 +31,6 @@ var Animation = Class.create({
 	},
 
 	renderImages: function () {
-		/*var imagesCount = this.animationOptions.images.length;
-
-		if (imagesCount && imagesCount >= 2) {
-			this.appendImages();
-		} else {
-			this.createDefaultImages();
-		}*/
-
 		this.createDefaultImages();
 	},
 
@@ -49,34 +41,14 @@ var Animation = Class.create({
 		}
 	},
 
-	appendImages: function () {
-		var wrapper,
-				image;
-
-		this.container = this.animationOptions.container || this.createContainer();
-
-		for (var i = 0; i < this.animationOptions.images.length; i++) {
-			image = document.createElement('img');
-			image.src = this.animationOptions.images[i].trim();
-			image.style.width = this.width;
-			image.style.height = this.height;
-			images.addClassName(this.className);
-
-			wrapper = document.createElement('div').addClassName('image');
-			wrapper.appendChild(image);
-
-			this.container.appendChild(images);
-		}
-	},
-
 	createDefaultImages: function () {
 		var el;
 
 		this.container = this.animationOptions.container || this.createContainer();
 
-			for (var i = 0; i < this.colors.length; i++) {
+			for (var i = 0; i < this.animationOptions.images.length; i++) {
 				el = document.createElement('div').addClassName('image');
-				el.style.backgroundColor = this.colors[i];
+				el.style.backgroundColor = this.animationOptions.images[i];
 				el.style.width = this.width;
 				el.style.height = this.height;
 				el.addClassName(this.className);
